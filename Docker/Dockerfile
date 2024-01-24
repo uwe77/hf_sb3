@@ -76,7 +76,10 @@ RUN pip install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 --index-url h
         trajectopy-core==2.4.8 \
         huggingface-sb3==3.0 \
         huggingface_hub==0.20.2 \
-        hf_transfer==0.1.4
+        hf_transfer==0.1.4 
+RUN pip install \
+        swig \
+        gymnasium[box2d]
 
 RUN echo "root ALL=(ALL)  ALL" >> /etc/sudoers \
     && echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ${HOME}/.bashrc 
