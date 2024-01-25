@@ -7,8 +7,8 @@ from huggingface_sb3 import load_from_hub, ModelRepoId, ModelName, EnvironmentNa
 
 checkpoint = load_from_hub(
     repo_id="uwwee/ppo-LunarLander-v2",
-    filename="ppo-LunarLander-v2.zip",
-    # repo_id="mm/ppo-LunarLander-v2",
+    filename="1600000.zip",
+    # repo_id="osanseviero/ppo-LunarLander-v2",
     # filename="ppo-LunarLander-v2.zip",
 )
 model = PPO.load(checkpoint)
