@@ -3,7 +3,7 @@ from io import StringIO
 from os import path
 from typing import Optional
 
-import numpy as np
+import numpy as npEnv
 
 import gymnasium as gym
 from gymnasium import Env, spaces, utils

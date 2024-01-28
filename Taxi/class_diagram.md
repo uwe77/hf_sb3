@@ -2,5 +2,6 @@
 
 ```mermaid
 classDiagram
-    Env <|-- TaxiEnv
+    Env <|-- TaxiEnv: inherit
+    
 ```
