@@ -29,15 +29,18 @@ def crawl_page(url="https://huggingface.co/models?pipeline_tag=reinforcement-lea
             data.append(crawl_model_page(sub_site_url))
     return data
 
-def crawl_model_page(url):
+def crawl_model_page(url, pattern = r'[^\/]+'+"/"+r'[^\/]+'):
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        
         # 提取<meta property="og:title">的content属性值
         title_tag = soup.find("meta", property="og:title")
         title = title_tag["content"] if title_tag else "Title Not Found"
-        
+        if not re.match(pattern, title):
+            return
+        title = title.replace(" \u00b7 Hugging Face", "")
+        author = title.split("/")[0]
+        model_name = title.split("/")[1]
         # 提取<body>标签下的所有内容
         body_content = soup.body
         if body_content is not None:
@@ -50,8 +53,10 @@ def crawl_model_page(url):
         
         return {
             "title": title,
+            "author": author,
+            "model_name": model_name,
             "url": url,
-            "body_html": body_html
+            "describe": body_html
         }
     else:
         return
@@ -63,7 +68,7 @@ def save_to_json(data, filename='output.json'):
 if __name__ == "__main__":
     site = "https://huggingface.co/models?pipeline_tag=reinforcement-learning&sort=trending"
     print(site[:-13])
-    pages= 1249
+    pages= 1
     data = []
     for i in range(pages):
         print(f"**************Processing page {i+1}/{pages}**************")
