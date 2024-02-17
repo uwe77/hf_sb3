@@ -80,9 +80,9 @@ if __name__ == "__main__":
     print(site[:-13])
     pages= 1248
     data = []
-    file_num = 2
+    file_num = 1
     try:
-        for i in range(573, pages):
+        for i in range(pages):
             print(f"**************Processing page {i+1}/{pages}**************")
             url = site
             if i != 0:
@@ -91,11 +91,11 @@ if __name__ == "__main__":
             data.extend(page_data)
             save_to_json(data, f"hf_rl_fullsearch_p{file_num}.json")
             print("\n**************Saved current data**************")
-            if i % 100 == 0:
+            if i % 100 == 0 and i != 0:
                 print("**************100 pages achieved**************",
                       "\n",
                       "**************Sleeping for 10s***************")
-                for remaining in range(10, 0, -1):
+                for remaining in range(120, 0, -1):
                     sys.stdout.write("\r")
                     sys.stdout.write("{:2d} seconds remaining.".format(remaining))
                     sys.stdout.flush()
