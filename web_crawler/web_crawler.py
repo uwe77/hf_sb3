@@ -105,5 +105,3 @@ if __name__ == "__main__":
                 file_num += 1
     except:
         print("Error occured")
-    # save_to_json(data)
-    # p2 need to rerun from 194-294
