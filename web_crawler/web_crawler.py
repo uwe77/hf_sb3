@@ -1,4 +1,4 @@
-import requests, re
+import requests, re, time, sys
 from bs4 import BeautifulSoup
 import json
 
@@ -8,7 +8,10 @@ def crawl_page(url="https://huggingface.co/models?pipeline_tag=reinforcement-lea
     # Assuming 'html_content' contains the HTML from the file you provided
     response = requests.get(url)
     if response.status_code != 200:
-        print(f"Failed to access {url}")
+        # print(f"Failed to access {url}")
+        sys.stdout.write("\r")
+        sys.stdout.write("Failed to access {}".format(url))
+        sys.stdout.flush()
         return None
     
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -20,13 +23,20 @@ def crawl_page(url="https://huggingface.co/models?pipeline_tag=reinforcement-lea
             continue
         sub_site_url = base_url + link['href']
         i += 1
-        print(f"{i} th sub_site: ",sub_site_url)
+        # print(f"{i} th sub_site: ",sub_site_url)
+        sys.stdout.write("\r")
+        sys.stdout.write("{:2d} th sub_site: {}".format(i, sub_site_url))
+        sys.stdout.flush()
         response = requests.get(sub_site_url)
         if response.status_code != 200:
-            print(f"Failed to access {sub_site_url}")
+            sys.stdout.write("\r")
+            sys.stdout.write("Failed to access {}".format(sub_site_url))
+            sys.stdout.flush()
             continue
         else:
-            data.append(crawl_model_page(sub_site_url))
+            tmp = crawl_model_page(sub_site_url)
+            if tmp is not None:
+                data.append(tmp)
     return data
 
 def crawl_model_page(url, pattern = r'[^\/]+'+"/"+r'[^\/]+'):
@@ -68,13 +78,32 @@ def save_to_json(data, filename='output.json'):
 if __name__ == "__main__":
     site = "https://huggingface.co/models?pipeline_tag=reinforcement-learning&sort=trending"
     print(site[:-13])
-    pages= 1
+    pages= 1248
     data = []
-    for i in range(pages):
-        print(f"**************Processing page {i+1}/{pages}**************")
-        url = site
-        if i != 0:
-            url = site[:-13]+f'p={i}'+site[-14:]
-        page_data = crawl_page(url=url, pattern = "/"+r'[^\/]+'+"/"+r'[^\/]+')
-        data.extend(page_data)
-    save_to_json(data)
+    file_num = 2
+    try:
+        for i in range(573, pages):
+            print(f"**************Processing page {i+1}/{pages}**************")
+            url = site
+            if i != 0:
+                url = site[:-13]+f'p={i}'+site[-14:]
+            page_data = crawl_page(url=url, pattern = "/"+r'[^\/]+'+"/"+r'[^\/]+')
+            data.extend(page_data)
+            save_to_json(data, f"hf_rl_fullsearch_p{file_num}.json")
+            print("\n**************Saved current data**************")
+            if i % 100 == 0:
+                print("**************100 pages achieved**************",
+                      "\n",
+                      "**************Sleeping for 10s***************")
+                for remaining in range(10, 0, -1):
+                    sys.stdout.write("\r")
+                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                    sys.stdout.flush()
+                    time.sleep(1)
+                sys.stdout.write("\rComplete!            \n")
+                print("**************start next 100 pages************")
+                file_num += 1
+    except:
+        print("Error occured")
+    # save_to_json(data)
+    # p2 need to rerun from 194-294
